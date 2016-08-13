@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class VnaClient():
-
     def __init__(self):
         self.ser = serial.Serial(
                 #port='/dev/ttyUSB0',
@@ -49,7 +48,6 @@ class VnaClient():
         plt.title('VSWR')
 
         plt.show()
-
 
 if __name__ == '__main__':
     vna = VnaClient()
