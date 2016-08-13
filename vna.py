@@ -40,10 +40,18 @@ class VnaClient():
         self.set_steps()
 
     def set_start_freq(self, start_freq = 23000000):
+        if(int(start_freq) >= self.stop_freq):
+            print("ERROR: Start frequency must be lesser than stop frequency")
+            return
+
         self.start_freq = int(start_freq)
         self.ser.write((str(self.start_freq) + 'a').encode('utf-8'))
 
     def set_stop_freq(self, stop_freq = 27000000):
+        if(int(stop_freq) <= self.start_freq):
+            print("ERROR: Stop frequency must be greater than start frequency")
+            return
+
         self.stop_freq = int(stop_freq)
         self.ser.write((str(self.stop_freq) + 'b').encode('utf-8'))
 
