@@ -22,8 +22,14 @@ class VnaClient():
 
         print('Connection is open:', self.ser.is_open)
 
-        s = self.ser.read(2500)
-        #print(s)
+        s = ""
+        while(True):
+            tmp = self.ser.readline().decode('utf-8')
+            s = s + tmp
+            if tmp == "":
+                break
+
+        print(s)
 
         self.set_start_freq()
         self.set_stop_freq()
@@ -43,9 +49,13 @@ class VnaClient():
 
     def plot(self):
         self.ser.write('s'.encode('utf-8'))
-        s = self.ser.read(6500)
-        data = s.decode('utf-8')
-        #print(data)
+
+        data = ""
+        while(True):
+            tmp = self.ser.readline().decode('utf-8')
+            data = data + tmp
+            if tmp == "":
+                break
 
         reader = csv.reader(data.splitlines(True), delimiter=',')
         y = []
@@ -64,7 +74,13 @@ class VnaClient():
 
     def get_current_settings(self):
         self.ser.write('?'.encode('utf-8'))
-        print(self.ser.read(1000).decode('utf-8'))
+        data = ""
+        while(True):
+            tmp = self.ser.readline().decode('utf-8')
+            data = data + tmp
+            if tmp == "":
+                break
+        print(data)
 
 if __name__ == '__main__':
     vna = VnaClient()
