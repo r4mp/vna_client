@@ -72,7 +72,7 @@ class VnaClient():
         plt.plot(x, y)
         plt.xlabel('Frequency in Hz')
         plt.ylabel('SWR')
-        plt.ticklabel_format(style='plain', axis='x', scilimits=(0,0))
+        plt.ticklabel_format(style='plain', axis='x')
         plt.title('VSWR')
 
         plt.show()
