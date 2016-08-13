@@ -1,3 +1,4 @@
+import datetime
 import serial
 import csv
 
@@ -19,6 +20,9 @@ class VnaClient():
         self.start_freq = 23000000
         self.stop_freq = 27000000
         self.steps = 20
+        self.antenna_location = ""
+
+        self.data = []
 
         print('Connection is open:', self.ser.is_open)
 
@@ -47,21 +51,24 @@ class VnaClient():
         self.steps = int(steps)
         self.ser.write((str(self.steps) + 'n').encode('utf-8'))
 
-    def plot(self):
+    def fetch_data(self):
         self.ser.write('s'.encode('utf-8'))
 
-        data = ""
+        self.data = []
         while(True):
             tmp = self.ser.readline().decode('utf-8')
-            data = data + tmp
             if tmp == "":
                 break
+            self.data.append(tmp)
 
-        reader = csv.reader(data.splitlines(True), delimiter=',')
+    def plot(self):
+        self.fetch_data()
+        #self.reader = csv.reader(self.data.splitlines(True), delimiter=',')
+        self.reader = csv.reader(self.data, delimiter=',')
         x = []
         y = []
 
-        for row in reader:
+        for row in self.reader:
             print(row)
             if(row[0].upper() != "END"):
                 x.append(row[0])
@@ -73,7 +80,14 @@ class VnaClient():
         plt.xlabel('Frequency in Hz')
         plt.ylabel('SWR')
         plt.ticklabel_format(style='plain', axis='x')
-        plt.title('VSWR')
+
+        title = 'VSWR'
+        if self.antenna_location != "":
+            title = title + " - Location: " + self.antenna_location
+
+        title = title + " - Datetime: " + str(datetime.datetime.now())
+        plt.title(title)
+        #plt.figtext(0.2, 0.2, "test", bbox=dict(facecolor='red', alpha=0.5))
 
         plt.show()
 
@@ -82,24 +96,37 @@ class VnaClient():
         data = ""
         while(True):
             tmp = self.ser.readline().decode('utf-8')
-            data = data + tmp
             if tmp == "":
                 break
-        print(data)
+            data = data + tmp
+
+        data = data + 'Antenna location: ' + self.antenna_location
+        return data
+
+    def save(self):
+        pass
+        #self.reader = csv.reader(self.data, delimiter=',')
+        #for row in self.reader:
+        #    print(row)
+
+    def set_antenna_location(self, antenna_location):
+        self.antenna_location = antenna_location
 
 if __name__ == '__main__':
     vna = VnaClient()
 
-    instruction = """
+    instructions = """
     [a] - set start frequency
     [b] - set stop frequency
+    [l] - set antenna location
     [n] - set number of steps
-    [s] - plot graph
-    [?] - get current settings
+    [p] - plot graph
+    [g] - get current settings
+    [?] - show help
     [q] - quit
     """
 
-    print(instruction)
+    print(instructions)
 
     while(1):
         inp = input('Choose: ')
@@ -107,12 +134,17 @@ if __name__ == '__main__':
             vna.set_start_freq(input('Frequency in Hz: '))
         if(inp == 'b'):
             vna.set_stop_freq(input('Frequency in Hz: '))
+        if(inp == 'l'):
+            vna.set_antenna_location(input('Antenna location: '))
         if(inp == 'n'):
             vna.set_steps(input('Number of steps: '))
-        if(inp == 's'):
+        if(inp == 'p'):
             vna.plot()
-        if(inp == '?'):
-            vna.get_current_settings()
+            vna.save()
+        if(inp == 'g'):
+            print(vna.get_current_settings(), '\n')
+        if(inp == '?') or (inp == 'h'):
+            print(instructions)
         if(inp == 'q'):
             break
 
