@@ -8,7 +8,7 @@ class VnaClient():
     def __init__(self):
         self.ser = serial.Serial(
                 #port='/dev/ttyUSB0',
-                port='/dev/pts/5',
+                port='/dev/pts/2',
                 baudrate=57600,
                 parity=serial.PARITY_NONE,
                 stopbits=serial.STOPBITS_ONE,
@@ -62,6 +62,10 @@ class VnaClient():
 
         plt.show()
 
+    def get_current_settings(self):
+        self.ser.write('?'.encode('utf-8'))
+        print(self.ser.read(1000).decode('utf-8'))
+
 if __name__ == '__main__':
     vna = VnaClient()
 
@@ -70,6 +74,7 @@ if __name__ == '__main__':
     [b] - set stop frequency
     [n] - set number of steps
     [s] - plot graph
+    [?] - get current settings
     [q] - quit
     """
 
@@ -85,6 +90,8 @@ if __name__ == '__main__':
             vna.set_steps(input('Number of steps: '))
         if(inp == 's'):
             vna.plot()
+        if(inp == '?'):
+            vna.get_current_settings()
         if(inp == 'q'):
             break
 
