@@ -20,6 +20,7 @@ class VnaClient():
         self.start_freq = 23000000
         self.stop_freq = 27000000
         self.steps = 20
+        self.antenna_length = ""
         self.antenna_location = ""
 
         self.data = []
@@ -94,9 +95,11 @@ class VnaClient():
 
         title = 'VSWR'
         if self.antenna_location != "":
-            title = title + " - Location: " + self.antenna_location
+            title = title + " - Antenna Location: " + self.antenna_location
+        if self.antenna_length != "":
+            title = title + " - Antenna Length: " + self.antenna_length + 'mm'
 
-        title = title + " - Datetime: " + str(datetime.datetime.now())
+        title = title + "\nDatetime: " + str(datetime.datetime.now())
         plt.title(title)
         #plt.figtext(0.2, 0.2, "test", bbox=dict(facecolor='red', alpha=0.5))
 
@@ -111,7 +114,8 @@ class VnaClient():
                 break
             data = data + tmp
 
-        data = data + 'Antenna location: ' + self.antenna_location
+        data = data + 'Antenna location: ' + self.antenna_location + '\n'
+        data = data + 'Antenna length: ' + self.antenna_length
         return data
 
     def save(self):
@@ -119,6 +123,9 @@ class VnaClient():
         #self.reader = csv.reader(self.data, delimiter=',')
         #for row in self.reader:
         #    print(row)
+
+    def set_antenna_length( self, antenna_length):
+        self.antenna_length = antenna_length
 
     def set_antenna_location(self, antenna_location):
         self.antenna_location = antenna_location
@@ -129,7 +136,8 @@ if __name__ == '__main__':
     instructions = """
     [a] - set start frequency
     [b] - set stop frequency
-    [l] - set antenna location
+    [h] - set antenna location
+    [l] - set antenna length
     [n] - set number of steps
     [p] - plot graph
     [g] - get current settings
@@ -145,8 +153,10 @@ if __name__ == '__main__':
             vna.set_start_freq(input('Frequency in Hz: '))
         if(inp == 'b'):
             vna.set_stop_freq(input('Frequency in Hz: '))
-        if(inp == 'l'):
+        if(inp == 'h'):
             vna.set_antenna_location(input('Antenna location: '))
+        if(inp == 'l'):
+            vna.set_antenna_length(input('Antenna length (in mm): '))
         if(inp == 'n'):
             vna.set_steps(input('Number of steps: '))
         if(inp == 'p'):
@@ -154,7 +164,7 @@ if __name__ == '__main__':
             vna.save()
         if(inp == 'g'):
             print(vna.get_current_settings(), '\n')
-        if(inp == '?') or (inp == 'h'):
+        if(inp == '?'):
             print(instructions)
         if(inp == 'q'):
             break
