@@ -17,16 +17,29 @@ class VnaClient():
                 )
 
         self.start_freq = 23000000
-        self.end_freq = 27000000
+        self.stop_freq = 27000000
+        self.steps = 20
 
         print('Connection is open:', self.ser.is_open)
 
         s = self.ser.read(2500)
         #print(s)
 
+        self.set_start_freq()
+        self.set_stop_freq()
+        self.set_steps()
+
+    def set_start_freq(self, start_freq = 23000000):
+        self.start_freq = int(start_freq)
         self.ser.write((str(self.start_freq) + 'a').encode('utf-8'))
-        self.ser.write((str(self.end_freq) + 'b').encode('utf-8'))
-        self.ser.write('20n'.encode('utf-8'))
+
+    def set_stop_freq(self, stop_freq = 27000000):
+        self.stop_freq = int(stop_freq)
+        self.ser.write((str(self.stop_freq) + 'b').encode('utf-8'))
+
+    def set_steps(self, steps = 20):
+        self.steps = int(steps)
+        self.ser.write((str(self.steps) + 'n').encode('utf-8'))
 
     def plot(self):
         self.ser.write('s'.encode('utf-8'))
@@ -42,7 +55,7 @@ class VnaClient():
             if(row[0].upper() != "END"):
                 y.append(row[2])
 
-        x = np.arange(self.start_freq, self.end_freq, (self.end_freq - self.start_freq) / len(y))
+        x = np.arange(self.start_freq, self.stop_freq, (self.stop_freq - self.start_freq) / len(y))
 
         plt.plot(x, y)
         plt.title('VSWR')
@@ -51,5 +64,28 @@ class VnaClient():
 
 if __name__ == '__main__':
     vna = VnaClient()
-    vna.plot()
+
+    instruction = """
+    [a] - set start frequency
+    [b] - set stop frequency
+    [n] - set number of steps
+    [s] - plot graph
+    [q] - quit
+    """
+
+    print(instruction)
+
+    while(1):
+        inp = input('Choose: ')
+        if(inp == 'a'):
+            vna.set_start_freq(input('Frequency in Hz: '))
+        if(inp == 'b'):
+            vna.set_stop_freq(input('Frequency in Hz: '))
+        if(inp == 'n'):
+            vna.set_steps(input('Number of steps: '))
+        if(inp == 's'):
+            vna.plot()
+        if(inp == 'q'):
+            break
+
     vna.ser.close()
