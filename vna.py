@@ -56,6 +56,9 @@ class VnaClient():
         self.ser.write((str(self.stop_freq) + 'b').encode('utf-8'))
 
     def set_steps(self, steps = 20):
+        if(int(steps) < 2):
+            print("ERROR: Number of steps must be greater than '1'")
+            return
         self.steps = int(steps)
         self.ser.write((str(self.steps) + 'n').encode('utf-8'))
 
