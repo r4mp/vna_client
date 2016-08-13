@@ -32,9 +32,18 @@ data = s.decode('utf-8')
 #print(data)
 
 reader = csv.reader(data.splitlines(True), delimiter=',')
+y = []
 
 for row in reader:
     print(row)
+    if(row[0].upper() != "END"):
+        y.append(row[2])
 
 ser.close()
 
+x = np.arange(start_freq, end_freq, (end_freq - start_freq) / len(y))
+
+plt.plot(x, y)
+plt.title('VSWR')
+
+plt.show()
