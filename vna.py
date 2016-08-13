@@ -58,16 +58,21 @@ class VnaClient():
                 break
 
         reader = csv.reader(data.splitlines(True), delimiter=',')
+        x = []
         y = []
 
         for row in reader:
             print(row)
             if(row[0].upper() != "END"):
+                x.append(row[0])
                 y.append(row[2])
 
-        x = np.arange(self.start_freq, self.stop_freq, (self.stop_freq - self.start_freq) / len(y))
+        #x = np.arange(self.start_freq, self.stop_freq, (self.stop_freq - self.start_freq) / len(y))
 
         plt.plot(x, y)
+        plt.xlabel('Frequency in Hz')
+        plt.ylabel('SWR')
+        plt.ticklabel_format(style='plain', axis='x', scilimits=(0,0))
         plt.title('VSWR')
 
         plt.show()
