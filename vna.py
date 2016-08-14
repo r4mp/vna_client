@@ -84,7 +84,7 @@ class VnaClient():
             print(row)
             if(row[0].upper() != "END"):
                 x.append(row[0])
-                y.append(row[2])
+                y.append(float(row[2]) / 1000)
 
         #x = np.arange(self.start_freq, self.stop_freq, (self.stop_freq - self.start_freq) / len(y))
 
