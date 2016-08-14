@@ -89,6 +89,8 @@ class VnaClient():
         #x = np.arange(self.start_freq, self.stop_freq, (self.stop_freq - self.start_freq) / len(y))
 
         plt.plot(x, y)
+        plt.grid()
+        plt.axis('equal')
         plt.xlabel('Frequency in Hz')
         plt.ylabel('SWR')
         plt.ticklabel_format(style='plain', axis='x')
