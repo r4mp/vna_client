@@ -71,6 +71,7 @@ class VnaClient():
             tmp = self.ser.readline().decode('utf-8')
             if tmp == "":
                 break
+            print(tmp)
             self.data.append(tmp)
 
     def plot(self):
@@ -81,7 +82,7 @@ class VnaClient():
         y = []
 
         for row in self.reader:
-            print(row)
+            #print(row)
             if(row[0].upper() != "END"):
                 x.append(row[0])
                 y.append(float(row[2]) / 1000)
