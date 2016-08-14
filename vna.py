@@ -9,7 +9,7 @@ class VnaClient():
     def __init__(self):
         self.ser = serial.Serial(
                 #port='/dev/ttyUSB0',
-                port='/dev/pts/2',
+                port='/dev/pts/3',
                 baudrate=57600,
                 parity=serial.PARITY_NONE,
                 stopbits=serial.STOPBITS_ONE,
@@ -71,7 +71,7 @@ class VnaClient():
             tmp = self.ser.readline().decode('utf-8')
             if tmp == "":
                 break
-            print(tmp)
+            print(tmp.rstrip('\r\n'))
             self.data.append(tmp)
 
     def plot(self):
@@ -84,7 +84,7 @@ class VnaClient():
         for row in self.reader:
             #print(row)
             if(row[0].upper() != "END"):
-                x.append(row[0])
+                x.append(float(row[0]) / 1000000)
                 y.append(float(row[2]) / 1000)
 
         #x = np.arange(self.start_freq, self.stop_freq, (self.stop_freq - self.start_freq) / len(y))
@@ -92,7 +92,7 @@ class VnaClient():
         plt.plot(x, y)
         plt.grid()
         #plt.axis('equal')
-        plt.xlabel('Frequency in Hz')
+        plt.xlabel('Frequency in MHz')
         plt.ylabel('SWR')
         plt.ticklabel_format(style='plain', axis='x')
 
@@ -103,6 +103,7 @@ class VnaClient():
             title = title + " - Antenna Length: " + self.antenna_length + 'mm'
 
         title = title + "\nDatetime: " + str(datetime.datetime.now())
+        title = title + "\nMin SWR: " + str(min(y)) + " Freq: " + str(x[y.index(min(y))]) + " MHz"
         plt.title(title)
         #plt.figtext(0.2, 0.2, "test", bbox=dict(facecolor='red', alpha=0.5))
 
